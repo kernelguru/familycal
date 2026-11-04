@@ -1,0 +1,8 @@
+# Beispiel für Caddy als Reverse-Proxy mit automatischem HTTPS
+kalender.example.de {
+	encode gzip
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy 127.0.0.1:8090
+}

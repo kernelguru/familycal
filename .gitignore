@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+server/pb_data/
+server/.env
+server/pb_hooks/lib/calendar.js
+*.ipa
+*.apk
+*.jks

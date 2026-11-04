@@ -1,0 +1,16 @@
+# Start:  cp .env.example .env  &&  docker compose up -d --build
+# Danach: Reverse-Proxy (Caddy/Traefik/NPM) mit HTTPS auf 127.0.0.1:8090 zeigen lassen.
+services:
+  familycal:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    # oder fertiges Image aus der CI:
+    # image: ghcr.io/<dein-github-name>/familycal-server:latest
+    container_name: familycal
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - ./pb_data:/pb/pb_data

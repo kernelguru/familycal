@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+ios/
+android/
+*.ipa
+*.apk
+*.aab
+*.jks
+*.keystore
+src/lib/calendar.js
+expo-env.d.ts

@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Kalender- und Server-Logik testen (zwei Zeitzonen)
+        run: |
+          TZ=Europe/Berlin node --test tests/*.test.js
+          TZ=America/New_York node --test tests/*.test.js
+      - name: Syntax der Server-Hooks prüfen
+        run: for f in server/pb_hooks/*.js server/pb_hooks/lib/*.js server/pb_migrations/*.js; do node --check "$f"; done

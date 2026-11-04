@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "FamilyCal",
+    "slug": "familycal",
+    "scheme": "familycal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F3F5F7"
+    },
+    "ios": {
+      "bundleIdentifier": "de.familycal.app",
+      "supportsTablet": true,
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "package": "de.familycal.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F3F5F7"
+      },
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sqlite",
+      "expo-background-task",
+      [
+        "expo-notifications",
+        {
+          "color": "#2F5D8A"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "FamilyCal braucht Zugriff auf deine Fotos, um Bilder an Termine anzuhängen.",
+          "cameraPermission": "FamilyCal braucht die Kamera, um Fotos (z. B. von Briefen) an Termine anzuhängen."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
