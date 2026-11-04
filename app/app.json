@@ -52,7 +52,8 @@
           "photosPermission": "FamilyCal braucht Zugriff auf deine Fotos, um Bilder an Termine anzuhängen.",
           "cameraPermission": "FamilyCal braucht die Kamera, um Fotos (z. B. von Briefen) an Termine anzuhängen."
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": false

@@ -35,7 +35,7 @@ jobs:
 
       - name: Abhängigkeiten installieren
         run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install --legacy-peer-deps --no-audit --no-fund; fi
+          if [ -f package-lock.json ]; then npm ci; else npm install --no-audit --no-fund; fi
           npx expo install --fix
 
       - name: iOS-Projekt erzeugen (inkl. CocoaPods)
