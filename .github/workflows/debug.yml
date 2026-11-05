@@ -1,0 +1,21 @@
+name: Debug
+on: workflow_dispatch
+jobs:
+  dbg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f server/Dockerfile -t fct .
+      - run: |
+          docker run -d --name fc -p 8090:8090 -e PB_ADMIN_EMAIL=a@b.de -e PB_ADMIN_PASSWORD=adminadmin123 --entrypoint sh fct -c '/pb/pocketbase superuser upsert a@b.de adminadmin123 --dir=/pb/pb_data --migrationsDir=/pb/pb_migrations; exec /pb/pocketbase serve --dev --http=0.0.0.0:8090 --dir=/pb/pb_data --hooksDir=/pb/pb_hooks --migrationsDir=/pb/pb_migrations'
+          for i in $(seq 1 30); do curl -fs localhost:8090/api/health >/dev/null && break; sleep 1; done
+          J='Content-Type: application/json'
+          curl -s -XPOST localhost:8090/api/collections/users/records -H "$J" -d '{"email":"x@y.de","password":"testpasswort123","passwordConfirm":"testpasswort123","name":"Anna"}'; echo
+          T=$(curl -s -XPOST localhost:8090/api/collections/users/auth-with-password -H "$J" -d '{"identity":"x@y.de","password":"testpasswort123"}' | jq -r .token)
+          echo "== create family"; curl -s -XPOST localhost:8090/api/collections/families/records -H "$J" -H "Authorization: $T" -d '{"name":"F"}'; echo
+          S=$(curl -s -XPOST localhost:8090/api/collections/_superusers/auth-with-password -H "$J" -d '{"identity":"a@b.de","password":"adminadmin123"}' | jq -r .token)
+          echo "== families (superuser)"; curl -s localhost:8090/api/collections/families/records -H "Authorization: $S"; echo
+          echo "== memberships (superuser)"; curl -s localhost:8090/api/collections/memberships/records -H "Authorization: $S"; echo
+          echo "== logs"; curl -s "localhost:8090/api/logs?perPage=20&sort=-created" -H "Authorization: $S" | jq -c '.items[] | {level,message,data}'
+      - if: always()
+        run: docker logs fc 2>&1 | grep -v "^SELECT\|^\[" | tail -80
