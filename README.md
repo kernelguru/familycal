@@ -38,6 +38,8 @@ Der Server lauscht nur auf `127.0.0.1:8090`. Davor gehört ein Reverse-Proxy mit
 
 Statt selbst zu bauen kannst du das Image aus der CI nehmen: `ghcr.io/<dein-github-name>/familycal-server:latest` (in `docker-compose.yml` die `image:`-Zeile aktivieren). Das Paket ist anfangs privat; entweder auf GitHub öffentlich stellen oder `docker login ghcr.io` mit einem Token.
 
+**Fehler `unable to open database file (14)`:** Der Container darf nicht in `pb_data` schreiben. Neuere Images korrigieren das beim Start selbst. Bei älteren hilft auf dem Host: `chown -R 1000:1000 server/pb_data`.
+
 ### Nach dem ersten Start
 
 1. Admin-Panel öffnen: `https://dein-server/_/` und mit `PB_ADMIN_EMAIL` / `PB_ADMIN_PASSWORD` anmelden. Danach die beiden Zeilen aus `.env` entfernen.

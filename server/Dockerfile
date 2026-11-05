@@ -5,7 +5,7 @@ FROM alpine:3.22
 ARG PB_VERSION=0.40.6
 ARG TARGETARCH=amd64
 
-RUN apk add --no-cache ca-certificates tzdata unzip wget \
+RUN apk add --no-cache ca-certificates tzdata unzip wget su-exec \
  && cd /tmp \
  && wget -q "https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_${TARGETARCH}.zip" \
  && wget -q "https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/checksums.txt" \
@@ -24,7 +24,8 @@ RUN chmod +x /entrypoint.sh \
  && adduser -D -H -u 1000 pb \
  && mkdir -p /pb/pb_data && chown pb:pb /pb/pb_data
 
-USER pb
+# Startet als root, korrigiert die Rechte von pb_data (Bind-Mount!) und
+# wechselt dann auf den Nutzer "pb". PUID/PGID überschreibbar.
 # Zeitzone für Wiederholungen und Texte in Benachrichtigungen
 ENV TZ=Europe/Berlin
 EXPOSE 8090
