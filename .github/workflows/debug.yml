@@ -21,6 +21,13 @@ jobs:
           echo "== auth-refresh"; curl -s -XPOST localhost:8090/api/collections/users/auth-refresh -H "Authorization: $T" | jq -c '{id: .record.id, err: .message}'
           echo "== rule"; curl -s localhost:8090/api/collections/families -H "Authorization: $S" | jq -c '{listRule,viewRule,fields:[.fields[]|{name,type,collectionId,maxSelect}]}'
           echo "== users col"; curl -s localhost:8090/api/collections/users -H "Authorization: $S" | jq -c '{id,name}'
+          U=$(curl -s -XPOST localhost:8090/api/collections/users/auth-refresh -H "Authorization: $T" | jq -r .record.id)
+          for F in "members ?= '$U'" "members.id ?= '$U'" "members ~ '$U'" "owner = '$U'" "members:each = '$U'"; do
+            echo "== filter $F"; curl -s -G localhost:8090/api/collections/families/records -H "Authorization: $S" --data-urlencode "filter=$F" | jq -c '{n: .totalItems, m: .message}'
+          done
+          for F in "members ?= @request.auth.id" "members.id ?= @request.auth.id" "owner = @request.auth.id" "@request.auth.id != ''"; do
+            echo "== as-anna $F"; curl -s -G localhost:8090/api/collections/families/records -H "Authorization: $T" --data-urlencode "filter=$F" | jq -c '{n: .totalItems, m: .message}'
+          done
           echo "== logs"; curl -s "localhost:8090/api/logs?perPage=30&sort=-created" -H "Authorization: $S" | jq -c '.items[] | {level,message,data}' | head -20
       - if: always()
         run: docker logs fc 2>&1 | tail -40
