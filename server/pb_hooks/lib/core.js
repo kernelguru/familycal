@@ -182,7 +182,7 @@ function enqueue(app, type, ev, userIds, msg, isParticipantFn) {
     famName = app.findRecordById("families", famId).getString("name");
   } catch (e) {}
 
-  var filter = "enabled = true && events ?= {:t} && (family = '' || family = {:f}) && (";
+  var filter = "enabled = true && events ~ {:t} && (family = '' || family = {:f}) && (";
   var params = { t: type, f: famId };
   for (var i = 0; i < userIds.length; i++) {
     filter += (i ? " || " : "") + "user = {:u" + i + "}";

@@ -36,7 +36,6 @@ const eve = await user('eve@test.local', 'Eve');
 const fam = await api('POST', '/api/collections/families/records', { name: 'Familie Test' }, anna.token);
 check('Familie anlegen', fam.status === 200, fam);
 const famId = fam.data?.id;
-console.log('  info  family', JSON.stringify(fam.data), 'anna', anna.id);
 
 const famView = await api('GET', `/api/collections/families/records/${famId}`, null, anna.token);
 check('Anna ist Admin der Familie', famView.data?.admins?.includes(anna.id) && famView.data?.members?.includes(anna.id), famView);

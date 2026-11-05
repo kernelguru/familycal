@@ -22,11 +22,11 @@ migrate((app) => {
   const families = new Collection({
     type: "base",
     name: "families",
-    listRule: "members ?= @request.auth.id",
-    viewRule: "members ?= @request.auth.id",
+    listRule: "members.id ?= @request.auth.id",
+    viewRule: "members.id ?= @request.auth.id",
     createRule: "@request.auth.id != '' && @request.auth.collectionName = 'users'",
     updateRule:
-      "admins ?= @request.auth.id" +
+      "admins.id ?= @request.auth.id" +
       " && @request.body.owner:isset = false" +
       " && @request.body.members:isset = false" +
       " && @request.body.writers:isset = false" +
@@ -47,13 +47,13 @@ migrate((app) => {
   const memberships = new Collection({
     type: "base",
     name: "memberships",
-    listRule: "family.members ?= @request.auth.id",
-    viewRule: "family.members ?= @request.auth.id",
+    listRule: "family.members.id ?= @request.auth.id",
+    viewRule: "family.members.id ?= @request.auth.id",
     createRule: null, // nur über Hooks (Familie anlegen, Einladung einlösen)
     updateRule:
-      "(family.admins ?= @request.auth.id || (user = @request.auth.id && @request.body.role:isset = false))" +
+      "(family.admins.id ?= @request.auth.id || (user = @request.auth.id && @request.body.role:isset = false))" +
       " && @request.body.family:isset = false && @request.body.user:isset = false",
-    deleteRule: "family.admins ?= @request.auth.id || user = @request.auth.id",
+    deleteRule: "family.admins.id ?= @request.auth.id || user = @request.auth.id",
     fields: [
       { name: "family", type: "relation", collectionId: families.id, maxSelect: 1, required: true, cascadeDelete: true },
       { name: "user", type: "relation", collectionId: users.id, maxSelect: 1, required: true, cascadeDelete: true },
@@ -70,11 +70,11 @@ migrate((app) => {
   const invites = new Collection({
     type: "base",
     name: "invites",
-    listRule: "family.admins ?= @request.auth.id",
-    viewRule: "family.admins ?= @request.auth.id",
-    createRule: "family.admins ?= @request.auth.id",
+    listRule: "family.admins.id ?= @request.auth.id",
+    viewRule: "family.admins.id ?= @request.auth.id",
+    createRule: "family.admins.id ?= @request.auth.id",
     updateRule: null,
-    deleteRule: "family.admins ?= @request.auth.id",
+    deleteRule: "family.admins.id ?= @request.auth.id",
     fields: [
       { name: "family", type: "relation", collectionId: families.id, maxSelect: 1, required: true, cascadeDelete: true },
       { name: "code", type: "text", max: 32 },
@@ -89,14 +89,14 @@ migrate((app) => {
   app.save(invites);
 
   // ---------- events ----------
-  const visible = "family.members ?= @request.auth.id && (private = false || created_by = @request.auth.id)";
-  const writable = "family.writers ?= @request.auth.id && (private = false || created_by = @request.auth.id)";
+  const visible = "family.members.id ?= @request.auth.id && (private = false || created_by = @request.auth.id)";
+  const writable = "family.writers.id ?= @request.auth.id && (private = false || created_by = @request.auth.id)";
   const events = new Collection({
     type: "base",
     name: "events",
     listRule: visible,
     viewRule: visible, // gilt auch für geschützte Anhänge
-    createRule: "family.writers ?= @request.auth.id",
+    createRule: "family.writers.id ?= @request.auth.id",
     updateRule:
       writable +
       " && (@request.body.family:isset = false || @request.body.family = family)" +
@@ -151,10 +151,10 @@ migrate((app) => {
     viewRule: own,
     createRule:
       "@request.auth.id != '' && @request.body.user = @request.auth.id" +
-      " && (@request.body.family:isset = false || @request.body.family = '' || family.members ?= @request.auth.id)",
+      " && (@request.body.family:isset = false || @request.body.family = '' || family.members.id ?= @request.auth.id)",
     updateRule:
       own + " && @request.body.user:isset = false" +
-      " && (@request.body.family:isset = false || @request.body.family = '' || family.members ?= @request.auth.id)",
+      " && (@request.body.family:isset = false || @request.body.family = '' || family.members.id ?= @request.auth.id)",
     deleteRule: own,
     fields: [
       { name: "user", type: "relation", collectionId: users.id, maxSelect: 1, required: true, cascadeDelete: true },
